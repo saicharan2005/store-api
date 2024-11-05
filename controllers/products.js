@@ -22,11 +22,18 @@ const getAllproducts = async (req,res)=>{
   // const products = await product.find(req.query)
 
 
-  const {featured} = req.query
+  const {featured,company,name} = req.query
 
   queryQbject={}
   if(featured){
     queryQbject.featured = featured ==='true'?true:false;
+  }
+  if(company){
+    queryQbject.company =company;
+  }
+
+  if(name){
+    queryQbject.name ={$regex:name ,$options:"i"}
   }
   const products = await product.find(queryQbject)
 
