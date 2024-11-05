@@ -22,7 +22,7 @@ const getAllproducts = async (req,res)=>{
   // const products = await product.find(req.query)
 
 
-  const {featured,company,name} = req.query
+  const {featured,company,name,sort} = req.query
 
   queryQbject={}
   if(featured){
@@ -35,7 +35,13 @@ const getAllproducts = async (req,res)=>{
   if(name){
     queryQbject.name ={$regex:name ,$options:"i"}
   }
-  const products = await product.find(queryQbject)
+  let result= product.find(queryQbject);
+
+  if(sort){
+    const sortList =sort.split(',').join(' ');
+    result = result.sort(sortList);
+  }
+  const products = await result;
 
 
   return res.status(200).json({products,noProducts:products.length})
