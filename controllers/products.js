@@ -1,15 +1,37 @@
+const product = require("../models/product")
 
 
 const getAllproductsStatic = async (req,res)=>{
 
-  return res.status(200).json({msg:`products testing route`})
+  const products = await product.find({
+    // featured:true
+    name:"wooden table"
+  })
+
+  return res.status(200).json({products,noProducts:products.length})
 
 }
 
 
 const getAllproducts = async (req,res)=>{
 
-  return res.status(200).json({msg:`products  route`})
+  console.log(req.query); 
+
+  
+
+  // const products = await product.find(req.query)
+
+
+  const {featured} = req.query
+
+  queryQbject={}
+  if(featured){
+    queryQbject.featured = featured ==='true'?true:false;
+  }
+  const products = await product.find(queryQbject)
+
+
+  return res.status(200).json({products,noProducts:products.length})
 
 }
 
