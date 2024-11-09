@@ -22,7 +22,7 @@ const getAllproducts = async (req,res)=>{
   // const products = await product.find(req.query)
 
 
-  const {featured,company,name,sort,field} = req.query
+  const {featured,company,name,sort,field,numericFilter} = req.query
 
   queryQbject={}
   if(featured){
@@ -35,7 +35,31 @@ const getAllproducts = async (req,res)=>{
   if(name){
     queryQbject.name ={$regex:name ,$options:"i"}
   }
+  if(numericFilter){
+    const operatorMap ={
+      '>': '$gt',
+      '>=': '$gte',
+      '=': '$eq',
+      '<': '$lt',
+      '<=': '$lte',
+    }
+    const regEx = /\b(<|>|>=|=|<|<=)\b/g
+    let filters = numericFilter.replace(regEx,(match)=> `-${operatorMap[match]}-`)
+    const options =['price','rating'];
+    filters =filters.split(',').forEach((item)=>{
+      const [field ,operator,value] =item.split('-')
+      if(options.includes(field)){
+        queryQbject[field]={[operator]:Number(value)}
+      }
+    })
+  }
+
   let result= product.find(queryQbject);
+
+
+
+
+
 
   if(sort){
     const sortList =sort.split(',').join(' ');
